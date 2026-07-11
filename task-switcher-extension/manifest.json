@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Task Switcher",
+  "version": "1.0.0",
+  "description": "Save and restore browser tab setups.",
+  "action": {
+    "default_title": "Task Switcher",
+    "default_popup": "index.html"
+  }
+}
