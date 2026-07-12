@@ -1,0 +1,977 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Reusable colors, spacing, and font settings for the light theme. */
+  --bg: #f8f8f7;
+  --surface: #ffffff;
+  --surface-hover: #ffffff;
+  --border: #dededb;
+  --text: #252525;
+  --text-muted: #747474;
+  --accent: #5d6f9d;
+  --accent-hover: #5d6f9d;
+  --accent-soft: #eceff5;
+  --success: #5f7a64;
+  --success-soft: #edf3ed;
+  --danger: #a95f5f;
+  --radius: 4px;
+  --radius-sm: 2px;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  /* Chrome uses this fixed size when it opens the extension popup. */
+  width: 360px;
+  min-height: 480px;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Hide navigation radios */
+.nav-radio,
+.modal-radio {
+  /* These controls still work, but are not visible in the interface. */
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Extension popup frame */
+.app {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  max-height: 600px;
+  background: var(--bg);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Screens — only show the checked one */
+.screen {
+  /* Screens are hidden by default; the checked rule below reveals one. */
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  flex: 1;
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease;
+}
+
+#screen-home:checked ~ .app .screen-home,
+#screen-folders-empty:checked ~ .app .screen-folders-empty,
+#screen-presets-empty:checked ~ .app .screen-presets-empty {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  /* A small entrance animation when switching between screens. */
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.header {
+  padding-bottom: 4px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  /* The square behind the folder icon in the popup heading. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle,
+.screen-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.screen-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.screen-header h2 {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.back-btn {
+  /* A label styled as a button so it can switch back to the home screen. */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+/* Home actions */
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.action-card {
+  /* The two selectable options on the home screen. */
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.action-card:active {
+  transform: translateY(0);
+}
+
+.action-icon {
+  /* Shared size and alignment for the icons in each option. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  border-radius: var(--radius-sm);
+}
+
+.save-icon {
+  background: #efefed;
+}
+
+.open-icon {
+  background: #efefed;
+}
+
+.action-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.action-text strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.action-text small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.chevron {
+  font-size: 20px;
+  color: var(--text-muted);
+}
+
+/* Lists */
+.item-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 260px;
+}
+
+.item-list li {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.row-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+/* Folder icon used in every saved folder and preset row. */
+.folder-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+/* Rows displayed after the save system provides data. */
+.saved-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+/*
+  Empty lists do not take up space. As soon as the save system adds a row
+  the list appears and the matching empty-state message is hiden 
+*/
+.saved-list:empty {
+  display: none;
+}
+
+.screen-folders-empty:has(#folder-list:not(:empty)) .empty-state,
+.screen-presets-empty:has(#preset-list:not(:empty)) .empty-state {
+  display: none;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-info strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-info small {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* The status label on a saved preset row. */
+.open-badge {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Buttons */
+.primary-btn {
+  /* Main call-to-action button, used for creating a folder or starting Manual Save. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: center;
+}
+
+.primary-btn.full-width {
+  width: 100%;
+  margin-top: auto;
+}
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+/* Empty state */
+.empty-state {
+  /* Centers the message displayed when there are no folders or presets. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 16px;
+  flex: 1;
+  gap: 6px;
+}
+
+.empty-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.empty-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Modal */
+.modal {
+  /* Covers the popup while the folder-name dialog is open. */
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.modal-radio:checked ~ .app .modal {
+  /* Reveals the dialog when its hidden checkbox is selected. */
+  display: flex;
+}
+
+.modal-backdrop {
+  /* The dimmed layer behind the dialog. */
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+
+.modal-panel {
+  /* The white box containing the folder-name field and its buttons. */
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-panel h3 {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.modal-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.modal-panel input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.modal-panel input:focus {
+  border-color: var(--accent);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Scrollbar */
+.screen::-webkit-scrollbar,
+.item-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.screen::-webkit-scrollbar-thumb,
+.item-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.ai-card {
+    margin: 12px 0;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+
+.ai-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+
+.ai-category {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+
+.ai-description {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+
+.ai-actions {
+    display: flex;
+    gap: 8px;
+}
+
+
+.ai-actions button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+.ai-accept {
+    background: var(--accent);
+    color: white;
+}
+
+
+.ai-delete {
+    background: #eeeeee;
+    color: #333;
+}
+
+/* =========================
+   FOLDER EXPANSION
+========================= */
+
+.folder-tabs {
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+
+    padding:10px 12px;
+
+    background:#fafafa;
+
+    border-top:1px solid var(--border);
+
+}
+
+
+
+.tab-row {
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    padding:8px 10px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    font-size:12px;
+
+}
+
+
+
+.tab-row span {
+
+    flex:1;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+
+
+
+
+/* =========================
+   FOLDER ACTION BUTTONS
+========================= */
+
+
+.add-tab,
+.delete-folder {
+
+
+    width:28px;
+
+    height:28px;
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+    border:none;
+
+    border-radius:6px;
+
+
+    cursor:pointer;
+
+
+    font-size:15px;
+
+
+    transition:.15s;
+
+}
+
+
+
+
+.add-tab {
+
+
+    background:var(--accent-soft);
+
+    color:var(--accent);
+
+
+}
+
+
+
+.add-tab:hover {
+
+    background:#dfe4f3;
+
+    transform:scale(1.08);
+
+}
+
+
+
+
+.delete-folder {
+
+
+    background:#f7e7e7;
+
+    color:var(--danger);
+
+
+}
+
+
+
+.delete-folder:hover {
+
+
+    background:#f0cccc;
+
+    transform:scale(1.08);
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   DELETE TAB BUTTON
+========================= */
+
+
+.delete-tab {
+
+
+    width:22px;
+
+    height:22px;
+
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    border:none;
+
+    border-radius:5px;
+
+
+    cursor:pointer;
+
+
+    background:#f7e7e7;
+
+    color:var(--danger);
+
+
+    font-size:12px;
+
+
+}
+
+
+
+.delete-tab:hover {
+
+
+    background:#efcaca;
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   BETTER FOLDER CARDS
+========================= */
+
+
+.saved-row {
+
+
+    overflow:hidden;
+
+    transition:.2s;
+
+
+}
+
+
+
+.saved-row:hover {
+
+
+    border-color:#c8c8c5;
+
+    transform:translateY(-1px);
+
+
+}
+
+
+
+.row-link {
+
+
+    transition:.15s;
+
+
+}
+
+
+.row-link:hover {
+
+
+    background:#fafafa;
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   AI NOTIFICATION
+========================= */
+
+
+.ai-card {
+
+
+    margin-top:10px;
+
+    padding:14px;
+
+
+    background:white;
+
+
+    border:1px solid var(--border);
+
+
+    border-radius:12px;
+
+
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+
+
+    animation:aiSlide .25s ease;
+
+
+}
+
+
+
+@keyframes aiSlide {
+
+
+    from {
+
+        opacity:0;
+
+        transform:translateY(-8px);
+
+    }
+
+
+    to {
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+
+}
+
+
+
+.ai-title {
+
+
+    font-size:15px;
+
+    font-weight:700;
+
+    margin-bottom:8px;
+
+
+}
+
+
+
+.ai-category {
+
+
+    display:inline-flex;
+
+
+    padding:4px 10px;
+
+
+    border-radius:20px;
+
+
+    background:var(--accent-soft);
+
+
+    color:var(--accent);
+
+
+    font-size:11px;
+
+
+    font-weight:600;
+
+
+}
+
+
+
+.ai-description {
+
+
+    margin-top:10px;
+
+
+    color:var(--text-muted);
+
+
+    line-height:1.4;
+
+
+}
+
+
+
+.ai-actions {
+
+
+    margin-top:14px;
+
+
+}
+
+
+
+.ai-actions button {
+
+
+    height:34px;
+
+    border-radius:8px;
+
+    font-weight:600;
+
+
+}
+
+
+
+.ai-accept {
+
+
+    background:var(--success);
+
+    color:white;
+
+
+}
+
+
+
+.ai-accept:hover {
+
+
+    filter:brightness(1.1);
+
+
+}
+
+
+
+.ai-delete {
+
+
+    background:#eee;
+
+    color:#555;
+
+
+}
+
+
+
+.ai-delete:hover {
+
+
+    background:#ddd;
+
+
+}
+
+
+
+
+
+
+/* =========================
+   SMALL BUTTON FIX
+========================= */
+
+
+button {
+
+
+    font-family:inherit;
+
+
+}
