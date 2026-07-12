@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TaskFlow</title>
+
+<link rel="stylesheet" href="popup.css">
+
+</head>
+
+
+<body>
+
+
+<!-- NAVIGATION -->
+
+<input 
+class="nav-radio"
+type="radio"
+name="screen"
+id="screen-home"
+checked>
+
+
+<input
+class="nav-radio"
+type="radio"
+name="screen"
+id="screen-folders-empty">
+
+
+
+<!-- CREATE MODAL -->
+
+<input
+class="modal-radio"
+type="checkbox"
+id="modal-new-folder">
+
+
+
+
+
+
+<div class="app">
+
+
+
+
+
+
+<!-- =====================
+HOME
+===================== -->
+
+
+<section class="screen screen-home">
+
+
+
+<header class="header">
+
+
+<div class="logo">
+
+
+<div class="logo-icon">
+
+📁
+
+</div>
+
+
+
+<div>
+
+<h1>
+
+TaskFlow
+
+</h1>
+
+
+<p class="subtitle">
+
+Workspace Manager
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+
+
+<!-- STARTUP FOLDERS -->
+
+
+<div class="pinned-title">
+
+Startup Folders
+
+</div>
+
+
+
+
+<div id="startup-folders">
+
+
+<div class="empty-pinned">
+
+No startup folders
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- OPEN FOLDERS -->
+
+
+<div class="home-actions">
+
+
+
+<label
+class="action-card"
+for="screen-folders-empty">
+
+
+
+<div class="action-icon">
+
+📂
+
+</div>
+
+
+
+
+
+<div class="action-text">
+
+
+<strong>
+
+Open Saved Folders
+
+</strong>
+
+
+
+<small>
+
+View and manage your workspaces
+
+</small>
+
+
+
+</div>
+
+
+
+
+
+
+<span class="chevron">
+
+›
+
+</span>
+
+
+
+</label>
+
+
+
+
+</div>
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- =====================
+FOLDERS SCREEN
+===================== -->
+
+
+<section class="screen screen-folders-empty">
+
+
+
+
+
+<header class="screen-header">
+
+
+
+<label
+class="back-btn"
+for="screen-home">
+
+←
+
+</label>
+
+
+
+
+
+<div>
+
+
+<h2>
+
+Folders
+
+</h2>
+
+
+
+<p class="screen-subtitle">
+
+Your saved tabs
+
+</p>
+
+
+
+</div>
+
+
+
+</header>
+
+
+
+
+
+
+
+
+
+<div 
+class="empty-state"
+id="empty-folder">
+
+
+
+<div class="empty-icon">
+
+📁
+
+</div>
+
+
+
+<p>
+
+No folders yet
+
+</p>
+
+
+
+<p class="empty-hint">
+
+Create a folder to start saving tabs
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<ul
+
+class="item-list"
+
+id="folder-list">
+
+
+</ul>
+
+
+
+
+
+
+
+<label
+class="primary-btn full-width"
+for="modal-new-folder">
+
+
++ Create Folder
+
+
+</label>
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- =====================
+CREATE FOLDER MODAL
+===================== -->
+
+
+<div class="modal">
+
+
+
+<label
+class="modal-backdrop"
+for="modal-new-folder">
+
+</label>
+
+
+
+
+
+
+
+<div class="modal-panel">
+
+
+
+
+
+<h3>
+
+Create Folder
+
+</h3>
+
+
+
+
+
+
+<p class="modal-desc">
+
+Save your current workspace
+
+</p>
+
+
+
+
+
+
+<input
+
+id="folder-name"
+
+type="text"
+
+maxlength="40"
+
+placeholder="Folder name"
+
+>
+
+
+
+
+
+
+
+<div class="modal-actions">
+
+
+
+
+
+<label
+class="ghost-btn"
+for="modal-new-folder">
+
+Cancel
+
+</label>
+
+
+
+
+
+
+
+<button
+
+id="create-folder"
+
+class="primary-btn">
+
+Create
+
+</button>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<script src="popup.js"></script>
+
+
+</body>
+
+</html>
