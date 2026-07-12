@@ -10,13 +10,6 @@ const emptyFolder = document.getElementById("empty-folder");
 
 let openedFolders = new Set();
 
-
-
-// =====================
-// STORAGE
-// =====================
-
-
 function getFolders(){
 
     return new Promise(resolve=>{
@@ -50,14 +43,6 @@ function saveFolders(folders){
     });
 
 }
-
-
-
-
-
-// =====================
-// CREATE FOLDER
-// =====================
 
 
 createFolderButton.onclick = async()=>{
@@ -110,14 +95,6 @@ createFolderButton.onclick = async()=>{
 };
 
 
-
-
-
-
-
-// =====================
-// LOAD FOLDERS
-// =====================
 
 
 async function loadFolders(){
@@ -245,9 +222,6 @@ ${folder.startup ? "⭐":"☆"}
 
 
 
-
-
-
         const tabsContainer =
         li.querySelector(".folder-tabs");
 
@@ -281,9 +255,6 @@ ${folder.startup ? "⭐":"☆"}
 </button>
 
 `;
-
-
-
 
 
             tabRow.querySelector(".delete-tab")
@@ -331,16 +302,6 @@ ${folder.startup ? "⭐":"☆"}
 
 
 
-
-
-
-
-
-
-
-        // OPEN DROPDOWN
-
-
         li.querySelector(".row-link")
         .onclick=(e)=>{
 
@@ -378,15 +339,6 @@ ${folder.startup ? "⭐":"☆"}
 
         };
 
-
-
-
-
-
-
-
-
-        // ADD TABS
 
 
         li.querySelector(".add-tab")
@@ -453,15 +405,6 @@ ${folder.startup ? "⭐":"☆"}
 
 
 
-
-
-
-
-
-
-        // STARTUP TOGGLE
-
-
         li.querySelector(".pin-folder")
         .onclick=async(e)=>{
 
@@ -499,15 +442,6 @@ ${folder.startup ? "⭐":"☆"}
 
         };
 
-
-
-
-
-
-
-
-
-        // DELETE FOLDER
 
 
         li.querySelector(".delete-folder")
@@ -561,18 +495,6 @@ ${folder.startup ? "⭐":"☆"}
 
 
 }
-
-
-
-
-
-
-
-
-
-// =====================
-// STARTUP FOLDERS HOME
-// =====================
 
 
 async function loadStartupFolders(){
@@ -681,15 +603,6 @@ async function loadStartupFolders(){
 
 
 
-
-
-
-
-// =====================
-// REFRESH WHEN OPENING
-// =====================
-
-
 document
 .querySelector('[for="screen-folders-empty"]')
 .onclick=()=>{
@@ -705,13 +618,5 @@ document
 };
 
 
-
-
-
-
-// INITIAL LOAD
-
-
 loadFolders();
-
 loadStartupFolders();
