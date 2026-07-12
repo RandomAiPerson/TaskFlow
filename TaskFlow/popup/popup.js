@@ -1,622 +1,236 @@
 const folderList = document.getElementById("folder-list");
 const startupFolders = document.getElementById("startup-folders");
+const nameInput = document.getElementById("folder-name");
+const createBtn = document.getElementById("create-folder");
+const modal = document.getElementById("modal-new-folder");
+const empty = document.getElementById("empty-folder");
 
-const folderNameInput = document.getElementById("folder-name");
-const createFolderButton = document.getElementById("create-folder");
-const modalRadio = document.getElementById("modal-new-folder");
+let opened = new Set();
 
-const emptyFolder = document.getElementById("empty-folder");
+const getFolders = () =>
+    new Promise(r => chrome.storage.local.get("manualFolders", d => r(d.manualFolders || [])));
 
-
-let openedFolders = new Set();
-
-function getFolders(){
-
-    return new Promise(resolve=>{
-
-        chrome.storage.local.get(
-            "manualFolders",
-            data=>{
-
-                resolve(data.manualFolders || []);
-
-            }
-        );
-
-    });
-
-}
+const saveFolders = folders =>
+    new Promise(r => chrome.storage.local.set({manualFolders: folders}, r));
 
 
+createBtn.onclick = async () => {
+    let name = nameInput.value.trim();
+    if (!name) return;
 
-function saveFolders(folders){
-
-    return new Promise(resolve=>{
-
-        chrome.storage.local.set(
-            {
-                manualFolders:folders
-            },
-            resolve
-        );
-
-    });
-
-}
-
-
-createFolderButton.onclick = async()=>{
-
-
-    const name =
-    folderNameInput.value.trim();
-
-
-
-    if(!name)
-        return;
-
-
-
-    const folders =
-    await getFolders();
-
-
+    let folders = await getFolders();
 
     folders.push({
-
-        id:Date.now(),
-
-        name:name,
-
-        tabs:[],
-
-        startup:false
-
+        id: Date.now(),
+        name,
+        tabs: [],
+        startup: false
     });
-
-
 
     await saveFolders(folders);
 
-
-
-    folderNameInput.value="";
-
-    modalRadio.checked=false;
-
-
+    nameInput.value = "";
+    modal.checked = false;
 
     loadFolders();
-
-    loadStartupFolders();
-
-
+    loadStartup();
 };
-
-
 
 
 async function loadFolders(){
 
+    let folders = await getFolders();
+    folderList.innerHTML = "";
 
-    const folders =
-    await getFolders();
+    empty.style.display = folders.length ? "none" : "flex";
 
+    folders.forEach(folder => {
 
+        let li = document.createElement("li");
+        li.className = "saved-row";
 
-    folderList.innerHTML="";
-
-
-
-
-    if(folders.length===0){
-
-        emptyFolder.style.display="flex";
-
-        return;
-
-    }
-
-
-
-    emptyFolder.style.display="none";
-
-
-
-
-
-    folders.forEach(folder=>{
-
-
-
-        const li =
-        document.createElement("li");
-
-
-
-        li.className="saved-row";
-
-
-
-        if(openedFolders.has(folder.id)){
-
+        if(opened.has(folder.id))
             li.classList.add("open");
 
-        }
 
+        li.innerHTML = `
+        <div class="row-link">
+            <span class="folder-icon">📂</span>
 
+            <div class="item-info">
+                <strong>${folder.name}</strong>
+                <small>${folder.tabs.length} tabs</small>
+            </div>
 
+            <button class="add-tab">+</button>
+            <button class="pin-folder">${folder.startup ? "⭐":"☆"}</button>
+            <button class="delete-folder">🗑</button>
+            <span class="chevron">›</span>
+        </div>
 
+        <div class="folder-tabs"></div>
+        `;
 
-        li.innerHTML=`
 
-<div class="row-link">
+        let tabsBox = li.querySelector(".folder-tabs");
 
 
-<span class="folder-icon">
-📂
-</span>
+        folder.tabs.forEach((tab,i)=>{
 
+            let row = document.createElement("div");
+            row.className="tab-row";
 
+            row.innerHTML = `
+            <span>🌐 ${tab.title}</span>
+            <button class="delete-tab">✕</button>
+            `;
 
-<div class="item-info">
 
-<strong>
-${folder.name}
-</strong>
-
-
-<small>
-${folder.tabs.length} tabs
-</small>
-
-
-</div>
-
-
-
-
-<button class="add-tab">
-+
-</button>
-
-
-
-
-<button class="pin-folder">
-
-${folder.startup ? "⭐":"☆"}
-
-</button>
-
-
-
-
-<button class="delete-folder">
-
-🗑
-
-</button>
-
-
-
-
-<span class="chevron">
-
-›
-
-</span>
-
-
-</div>
-
-
-
-<div class="folder-tabs">
-
-</div>
-
-
-`;
-
-
-
-        const tabsContainer =
-        li.querySelector(".folder-tabs");
-
-
-
-
-
-
-        folder.tabs.forEach((tab,index)=>{
-
-
-            const tabRow =
-            document.createElement("div");
-
-
-            tabRow.className="tab-row";
-
-
-
-            tabRow.innerHTML=`
-
-<span>
-🌐 ${tab.title}
-</span>
-
-
-<button class="delete-tab">
-
-✕
-
-</button>
-
-`;
-
-
-            tabRow.querySelector(".delete-tab")
-            .onclick=async(e)=>{
-
+            row.querySelector(".delete-tab").onclick = async e => {
 
                 e.stopPropagation();
 
+                opened.add(folder.id);
 
-                openedFolders.add(folder.id);
+                let folders = await getFolders();
+                let f = folders.find(x=>x.id===folder.id);
 
-
-
-                const folders =
-                await getFolders();
-
-
-
-                const target =
-                folders.find(
-                    f=>f.id===folder.id
-                );
-
-
-
-                target.tabs.splice(index,1);
-
-
+                f.tabs.splice(i,1);
 
                 await saveFolders(folders);
-
-
-
                 loadFolders();
-
-
             };
 
 
-
-            tabsContainer.appendChild(tabRow);
-
-
+            tabsBox.appendChild(row);
         });
 
 
 
-        li.querySelector(".row-link")
-        .onclick=(e)=>{
+        li.querySelector(".row-link").onclick = e => {
 
+            if(e.target.tagName==="BUTTON")
+                return;
 
-            if(
-                e.target.classList.contains("add-tab") ||
-                e.target.classList.contains("pin-folder") ||
-                e.target.classList.contains("delete-folder")
-            )
-            return;
+            li.classList.toggle("open");
 
-
-
-
-            if(li.classList.contains("open")){
-
-
-                li.classList.remove("open");
-
-                openedFolders.delete(folder.id);
-
-
-            }
-            else{
-
-
-                li.classList.add("open");
-
-                openedFolders.add(folder.id);
-
-
-            }
-
-
-
+            li.classList.contains("open")
+                ? opened.add(folder.id)
+                : opened.delete(folder.id);
         };
 
 
 
-        li.querySelector(".add-tab")
-        .onclick=async(e)=>{
-
+        li.querySelector(".add-tab").onclick = async e => {
 
             e.stopPropagation();
 
-
-
-            const tabs =
-            await chrome.tabs.query({
-
+            let tabs = await chrome.tabs.query({
                 currentWindow:true
-
             });
 
+            let folders = await getFolders();
+            let f = folders.find(x=>x.id===folder.id);
 
 
-
-            const folders =
-            await getFolders();
-
-
-
-            const target =
-            folders.find(
-                f=>f.id===folder.id
-            );
-
-
-
-
-
-            tabs.forEach(tab=>{
-
-
-                target.tabs.push({
-
-                    title:tab.title,
-
-                    url:tab.url
-
+            tabs.forEach(t=>{
+                f.tabs.push({
+                    title:t.title,
+                    url:t.url
                 });
-
-
             });
 
 
-
-
             await saveFolders(folders);
 
-
-
-            openedFolders.add(folder.id);
-
-
-
+            opened.add(folder.id);
             loadFolders();
-
-
         };
 
 
 
-        li.querySelector(".pin-folder")
-        .onclick=async(e)=>{
-
+        li.querySelector(".pin-folder").onclick = async e => {
 
             e.stopPropagation();
 
+            let folders = await getFolders();
+            let f = folders.find(x=>x.id===folder.id);
 
-
-            const folders =
-            await getFolders();
-
-
-
-            const target =
-            folders.find(
-                f=>f.id===folder.id
-            );
-
-
-
-            target.startup =
-            !target.startup;
-
-
-
+            f.startup=!f.startup;
 
             await saveFolders(folders);
 
-
-
             loadFolders();
-
-            loadStartupFolders();
-
-
+            loadStartup();
         };
 
 
 
-        li.querySelector(".delete-folder")
-        .onclick=async(e)=>{
-
+        li.querySelector(".delete-folder").onclick = async e => {
 
             e.stopPropagation();
 
+            let folders = await getFolders();
 
+            folders = folders.filter(x=>x.id!==folder.id);
 
-            const folders =
-            await getFolders();
+            await saveFolders(folders);
 
-
-
-            const updated =
-            folders.filter(
-                f=>f.id!==folder.id
-            );
-
-
-
-            await saveFolders(updated);
-
-
-
-            openedFolders.delete(folder.id);
-
-
+            opened.delete(folder.id);
 
             loadFolders();
-
-            loadStartupFolders();
-
-
+            loadStartup();
         };
-
-
-
-
-
-
 
 
         folderList.appendChild(li);
-
-
-
     });
-
-
-
 }
 
 
-async function loadStartupFolders(){
 
+async function loadStartup(){
 
-    if(!startupFolders)
-        return;
+    if(!startupFolders) return;
 
+    let folders = await getFolders();
 
+    let startup = folders.filter(x=>x.startup);
 
-    const folders =
-    await getFolders();
-
-
-
-
-    startupFolders.innerHTML="";
-
-
-
-
-    const startup =
-    folders.filter(
-        f=>f.startup
-    );
-
-
-
-
-    if(startup.length===0){
-
-
-        startupFolders.innerHTML=`
-
-        <div class="empty-pinned">
-
-        No startup folders
-
-        </div>
-
-        `;
-
-
-        return;
-
-    }
-
-
-
-
+    startupFolders.innerHTML = startup.length
+    ? ""
+    : `<div class="empty-pinned">No startup folders</div>`;
 
 
     startup.forEach(folder=>{
 
-
-        const div =
-        document.createElement("div");
-
-
+        let div=document.createElement("div");
 
         div.className="pinned-folder";
-
-
-
-        div.innerHTML=`
-
-        ⭐ ${folder.name}
-
-        `;
-
-
-
+        div.textContent="⭐ "+folder.name;
 
 
         div.onclick=()=>{
 
-
             folder.tabs.forEach(tab=>{
-
-
                 chrome.tabs.create({
-
                     url:tab.url
-
                 });
-
-
             });
-
-
 
         };
 
 
-
-
         startupFolders.appendChild(div);
-
-
-
     });
-
-
-
 }
 
 
 
-document
-.querySelector('[for="screen-folders-empty"]')
-.onclick=()=>{
-
-
-    setTimeout(()=>{
-
-        loadFolders();
-
-    },50);
-
-
+document.querySelector('[for="screen-folders-empty"]').onclick=()=>{
+    setTimeout(loadFolders,50);
 };
 
 
 loadFolders();
-loadStartupFolders();
+loadStartup();
