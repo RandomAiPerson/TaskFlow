@@ -1,13 +1,6 @@
 let activeTab = null;
 let startTime = Date.now();
 
-
-
-// =====================
-// STARTUP FOLDER LOADER
-// =====================
-
-
 chrome.runtime.onStartup.addListener(()=>{
 
     openStartupFolders();
@@ -79,16 +72,6 @@ function openStartupFolders(){
 
 
 
-
-
-
-
-
-// =====================
-// TRACK ACTIVE TAB TIME
-// =====================
-
-
 chrome.tabs.onActivated.addListener(async info=>{
 
 
@@ -114,10 +97,6 @@ chrome.tabs.onActivated.addListener(async info=>{
 
 
 });
-
-
-
-
 
 
 
@@ -253,17 +232,6 @@ function saveCurrentTabTime(){
 
 
 }
-
-
-
-
-
-
-
-// =====================
-// TEST COMMAND
-// =====================
-
 
 chrome.runtime.onMessage.addListener(
 (message)=>{
